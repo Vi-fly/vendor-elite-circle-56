@@ -1,6 +1,6 @@
-
 import { useAuth, UserRole } from '@/components/auth/AuthContext';
 import Layout from '@/components/layout/Layout';
+import PaymentModal from '@/components/payment/PaymentModal';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,7 @@ const Register = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [role, setRole] = useState<UserRole>('school');
   const [isLoading, setIsLoading] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   
   const { register } = useAuth();
   const { toast } = useToast();
@@ -43,7 +44,18 @@ const Register = () => {
       });
       return;
     }
-    
+
+    // For school and supplier roles, show payment modal
+    if (role === 'school' || role === 'supplier') {
+      setShowPaymentModal(true);
+      return;
+    }
+
+    // For admin role, proceed with direct registration (no payment required)
+    await handleRegistration();
+  };
+
+  const handleRegistration = async () => {
     try {
       setIsLoading(true);
       
@@ -67,6 +79,11 @@ const Register = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handlePaymentSuccess = () => {
+    setShowPaymentModal(false);
+    handleRegistration();
   };
 
   return (
@@ -153,11 +170,15 @@ const Register = () => {
                   >
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="school" id="school" />
-                      <Label htmlFor="school" className="font-normal">School Coordinator</Label>
+                      <Label htmlFor="school" className="font-normal">
+                        School Coordinator <span className="text-teal text-sm">(₹1 registration fee)</span>
+                      </Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="supplier" id="supplier" />
-                      <Label htmlFor="supplier" className="font-normal">Supplier</Label>
+                      <Label htmlFor="supplier" className="font-normal">
+                        Supplier <span className="text-teal text-sm">(₹1 registration fee)</span>
+                      </Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="admin" id="admin" />
@@ -171,7 +192,8 @@ const Register = () => {
                   className="w-full bg-gradient-to-r from-teal to-primary hover:from-teal-dark hover:to-primary-dark text-white btn-animated"
                   disabled={isLoading}
                 >
-                  {isLoading ? 'Creating Account...' : 'Create Account'}
+                  {isLoading ? 'Creating Account...' : 
+                   (role === 'school' || role === 'supplier') ? 'Proceed to Payment' : 'Create Account'}
                 </Button>
               </form>
             </CardContent>
@@ -191,6 +213,13 @@ const Register = () => {
             </CardFooter>
           </Card>
         </div>
+
+        <PaymentModal
+          isOpen={showPaymentModal}
+          onClose={() => setShowPaymentModal(false)}
+          userDetails={{ name, email, role: role as 'school' | 'supplier' }}
+          onPaymentSuccess={handlePaymentSuccess}
+        />
       </div>
     </Layout>
   );

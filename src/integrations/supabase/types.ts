@@ -36,10 +36,17 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "conversations_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "conversations_supplier_id_fkey"
             columns: ["supplier_id"]
             isOneToOne: false
-            referencedRelation: "supplier_applications"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -119,7 +126,29 @@ export type Database = {
           sender_id?: string
           sender_role?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_recipient_id_fkey"
+            columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       pricing_tables: {
         Row: {
@@ -168,6 +197,7 @@ export type Database = {
           email: string
           id: string
           name: string | null
+          phone: string | null
           role: string
           updated_at: string
         }
@@ -176,6 +206,7 @@ export type Database = {
           email: string
           id: string
           name?: string | null
+          phone?: string | null
           role: string
           updated_at?: string
         }
@@ -184,8 +215,86 @@ export type Database = {
           email?: string
           id?: string
           name?: string | null
+          phone?: string | null
           role?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      rating_configurations: {
+        Row: {
+          config: Json
+          created_at: string
+          id: string
+          supplier_id: string
+          updated_at: string
+        }
+        Insert: {
+          config?: Json
+          created_at?: string
+          id?: string
+          supplier_id: string
+          updated_at?: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string
+          id?: string
+          supplier_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "rating_configurations_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: true
+            referencedRelation: "supplier_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      registration_payments: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string | null
+          email: string
+          id: string
+          name: string
+          payment_id: string | null
+          payment_status: string | null
+          payment_url: string | null
+          role: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          currency?: string | null
+          email: string
+          id?: string
+          name: string
+          payment_id?: string | null
+          payment_status?: string | null
+          payment_url?: string | null
+          role: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string | null
+          email?: string
+          id?: string
+          name?: string
+          payment_id?: string | null
+          payment_status?: string | null
+          payment_url?: string | null
+          role?: string
+          updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -206,6 +315,7 @@ export type Database = {
           brochure_url: string | null
           company_type: string
           contact_name: string
+          created_at: string
           discounts: boolean | null
           email: string
           full_desc: string
@@ -230,6 +340,7 @@ export type Database = {
           status: string
           submission_date: string
           supplier_type: string
+          updated_at: string
           user_id: string | null
           website: string | null
           year_started: number
@@ -250,6 +361,7 @@ export type Database = {
           brochure_url?: string | null
           company_type: string
           contact_name: string
+          created_at?: string
           discounts?: boolean | null
           email: string
           full_desc: string
@@ -274,6 +386,7 @@ export type Database = {
           status?: string
           submission_date?: string
           supplier_type: string
+          updated_at?: string
           user_id?: string | null
           website?: string | null
           year_started: number
@@ -294,6 +407,7 @@ export type Database = {
           brochure_url?: string | null
           company_type?: string
           contact_name?: string
+          created_at?: string
           discounts?: boolean | null
           email?: string
           full_desc?: string
@@ -318,102 +432,115 @@ export type Database = {
           status?: string
           submission_date?: string
           supplier_type?: string
+          updated_at?: string
           user_id?: string | null
           website?: string | null
           year_started?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "supplier_applications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       supplier_feedback: {
         Row: {
-          id: string
-          supplier_id: string
-          school_id: string
-          feedback_type: string
-          subject: string
-          message: string
-          is_anonymous: boolean | null
-          status: string | null
           created_at: string
+          feedback_type: string
+          id: string
+          is_anonymous: boolean | null
+          message: string
+          school_id: string
+          status: string | null
+          subject: string
+          supplier_id: string
           updated_at: string
         }
         Insert: {
-          id?: string
-          supplier_id: string
-          school_id: string
-          feedback_type?: string
-          subject: string
-          message: string
-          is_anonymous?: boolean | null
-          status?: string | null
           created_at?: string
+          feedback_type?: string
+          id?: string
+          is_anonymous?: boolean | null
+          message: string
+          school_id: string
+          status?: string | null
+          subject: string
+          supplier_id: string
           updated_at?: string
         }
         Update: {
-          id?: string
-          supplier_id?: string
-          school_id?: string
-          feedback_type?: string
-          subject?: string
-          message?: string
-          is_anonymous?: boolean | null
-          status?: string | null
           created_at?: string
+          feedback_type?: string
+          id?: string
+          is_anonymous?: boolean | null
+          message?: string
+          school_id?: string
+          status?: string | null
+          subject?: string
+          supplier_id?: string
           updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "supplier_feedback_supplier_id_fkey"
-            columns: ["supplier_id"]
-            referencedRelation: "supplier_applications"
+            foreignKeyName: "supplier_feedback_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "supplier_feedback_school_id_fkey"
-            columns: ["school_id"]
-            referencedRelation: "profiles"
+            foreignKeyName: "supplier_feedback_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "supplier_applications"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       supplier_ratings: {
         Row: {
-          id: string
-          supplier_id: string
-          school_id: string
-          ratings: Json
           created_at: string
+          id: string
+          ratings: Json
+          school_id: string
+          supplier_id: string
           updated_at: string
         }
         Insert: {
-          id?: string
-          supplier_id: string
-          school_id: string
-          ratings: Json
           created_at?: string
+          id?: string
+          ratings: Json
+          school_id: string
+          supplier_id: string
           updated_at?: string
         }
         Update: {
-          id?: string
-          supplier_id?: string
-          school_id?: string
-          ratings?: Json
           created_at?: string
+          id?: string
+          ratings?: Json
+          school_id?: string
+          supplier_id?: string
           updated_at?: string
         }
         Relationships: [
           {
-            foreignKeyName: "supplier_ratings_supplier_id_fkey"
-            columns: ["supplier_id"]
-            referencedRelation: "supplier_applications"
+            foreignKeyName: "supplier_ratings_school_id_fkey"
+            columns: ["school_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "supplier_ratings_school_id_fkey"
-            columns: ["school_id"]
-            referencedRelation: "profiles"
+            foreignKeyName: "supplier_ratings_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "supplier_applications"
             referencedColumns: ["id"]
-          }
+          },
         ]
       }
       supplier_reviews: {
@@ -463,53 +590,44 @@ export type Database = {
           },
         ]
       }
-    
-      rating_configurations: {
-        Row: {
-          id: string
-          supplier_id: string
-          config: Json
-          created_at: string
-          updated_at: string
-        }
-        Insert: {
-          id?: string
-          supplier_id: string
-          config?: Json
-          created_at?: string
-          updated_at?: string
-        }
-        Update: {
-          id?: string
-          supplier_id?: string
-          config?: Json
-          created_at?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "rating_configurations_supplier_id_fkey"
-            columns: ["supplier_id"]
-            referencedRelation: "supplier_applications"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
     }
     Views: {
       supplier_rating_averages: {
         Row: {
-          supplier_id: string
-          ratings: {
-            [ratingArea: string]: {
-              average: number
-              weight: number
-            }
-          }
+          ratings: Json | null
+          supplier_id: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "supplier_ratings_supplier_id_fkey"
+            columns: ["supplier_id"]
+            isOneToOne: false
+            referencedRelation: "supplier_applications"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Functions: {
+      backfill_rating_configs: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      get_supplier_average_ratings: {
+        Args: { supplier_uuid: string }
+        Returns: {
+          rating_area: string
+          average_rating: number
+          total_ratings: number
+        }[]
+      }
+      get_supplier_overall_rating: {
+        Args: { supplier_uuid: string }
+        Returns: {
+          overall_rating: number
+          total_ratings: number
+        }[]
+      }
       get_user_role: {
         Args: Record<PropertyKey, never>
         Returns: string
