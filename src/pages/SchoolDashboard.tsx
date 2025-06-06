@@ -104,7 +104,14 @@ const SchoolDashboard = () => {
           .order('org_name');
 
         if (error) throw error;
-        setSuppliers(data || []);
+        
+        // Map org_name to name to match the expected interface
+        const mappedSuppliers = (data || []).map(supplier => ({
+          id: supplier.id,
+          name: supplier.org_name
+        }));
+        
+        setSuppliers(mappedSuppliers);
       } catch (error) {
         console.error('Error fetching suppliers:', error);
       }

@@ -1,4 +1,3 @@
-
 import RatingConfiguration from '@/components/admin/RatingConfiguration';
 import SupplierApproval from '@/components/admin/SupplierApproval';
 import SupplierRatingConfiguration from '@/components/admin/SupplierRatingConfiguration';
@@ -272,9 +271,6 @@ const Admin = () => {
               <RatingConfiguration />
             </TabsContent>
             
-            <TabsContent value="supplier-ratings" className="mt-6">
-              <SupplierRatingConfiguration />
-            </TabsContent>
           </Tabs>
         </div>
       </div>

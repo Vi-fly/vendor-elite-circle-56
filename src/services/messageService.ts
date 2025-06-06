@@ -184,7 +184,7 @@ export const getContactsFromConversations = async (userId: string, userRole: str
         .from('conversations')
         .select(`
           supplier_id,
-          supplier_applications(org_name)
+          supplier_applications!inner(org_name)
         `)
         .eq('school_id', userId);
         
@@ -193,7 +193,7 @@ export const getContactsFromConversations = async (userId: string, userRole: str
       if (data) {
         contacts = data.map(item => ({
           id: item.supplier_id,
-          name: item.supplier_applications?.[0]?.org_name || 'Unknown Supplier',
+          name: (item.supplier_applications as any)?.org_name || 'Unknown Supplier',
           role: 'supplier',
           avatar: '🏢' // Default avatar for suppliers
         }));
@@ -204,7 +204,7 @@ export const getContactsFromConversations = async (userId: string, userRole: str
         .from('conversations')
         .select(`
           school_id,
-          school:profiles(name)
+          profiles!inner(name)
         `)
         .eq('supplier_id', userId);
         
@@ -215,8 +215,8 @@ export const getContactsFromConversations = async (userId: string, userRole: str
           // Handle case where profiles might not exist or the structure is different than expected
           let name = 'School User';
           
-          if (item.school && Array.isArray(item.school) && item.school.length > 0) {
-            name = item.school[0].name || 'School User';
+          if (item.profiles && (item.profiles as any).name) {
+            name = (item.profiles as any).name;
           }
           
           return {
